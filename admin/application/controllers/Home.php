@@ -13,8 +13,13 @@ class Home extends CI_Controller {
 		$key_type = $this->input->get_post('type');
 		$key_type = $this->filter_key_type($key_type);
 		$keys = $this->get_key_by_type($key_type);
+		
+		$server_keys = array('redis_version', 'arch_bits', 'os', 'tcp_port', 'config_file','connected_clients','used_memory');
+		$server_info = $this->get_server_info($server_keys);
+		
 		$view_data['keys'] = $keys;
 		$view_data['key_type'] = $key_type;
+		$view_data['server_info'] = $server_info;
 		return $this->load->view('index.php', $view_data);
 	}
 	
@@ -45,6 +50,7 @@ class Home extends CI_Controller {
 				$keys[] = array(
 					'key' => $key,
 					'key_type' => $this->get_key_type($key),
+					'encoding' => $this->get_key_encoding($key),
 				);
 			}
 			
@@ -87,4 +93,21 @@ class Home extends CI_Controller {
 				return "hash";
 		}
 	}
+	
+	public function get_key_encoding($key){
+		$redis = get_redis_obj();
+		return $redis->object('ENCODING', $key);
+	}
+	
+	public function get_server_info($filter_keys){
+		$redis = get_redis_obj();
+		$server_info = $redis->info();
+		foreach($filter_keys as $key){
+			if(array_key_exists($key, $server_info)){
+				$filter_info[$key] = $server_info[$key];
+			}
+		}
+		return $filter_info;
+	}
+
 }
