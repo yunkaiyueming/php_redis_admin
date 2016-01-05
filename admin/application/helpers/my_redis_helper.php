@@ -1,11 +1,7 @@
 <?php
-static $redis;
-$redis_host = "127.0.0.1";
-$redis_port = 6379;
-
 function get_redis_obj(){
-	global $redis_host;
-	global $redis_port;
+	$redis_host = "127.0.0.1";
+	$redis_port = 6379;
 	
 	$redis = new Redis();
 	$res = $redis->connect($redis_host, $redis_port);

@@ -49,10 +49,7 @@
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
-            <li class="active"><a href="#">SERVER <span class="sr-only">(current)</span></a></li>
-            <li><a href="#">Reports</a></li>
-            <li><a href="#">Analytics</a></li>
-            <li><a href="#">Export</a></li>
+            <li class="active"><a href="<?=site_url("home/index")?>">Dashboard<span class="sr-only">(current)</span></a></li>
           </ul>
           <ul class="nav nav-sidebar">
             <li><a href="<?=site_url("home/index")."?type=string"?>">String</a></li>
@@ -81,7 +78,7 @@
               </thead>
               <tbody>
               <?php foreach($keys as $key){?>
-                <tr><td><?=$key?></td><td><?=$key?></td></tr>
+                <tr><td><?=$key['key']?></td><td><?=$key['key_type']?></td></tr>
               <?php }?>
               </tbody>
             </table>
