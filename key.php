@@ -1,5 +1,22 @@
 <?php
 include("lib/common.php");
+/*
+键(Key)
+	DEL
+	KEYS
+	RANDOMKEY
+	TTL
+	EXISTS
+	MOVE
+	RENAME
+	RENAMENX
+	TYPE
+	EXPIRE
+	EXPIREAT
+	OBJECT
+	PERSIST
+	SORT
+*/
 
 // $redis->set('name', 'zs');
 //$name = $redis->get('name');

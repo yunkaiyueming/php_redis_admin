@@ -1,5 +1,20 @@
 <?php 
 include("lib/common.php");
+/*
+ * 哈希表(Hash)
+	HSET
+	HSETNX
+	HMSET
+	HGET
+	HMGET
+	HGETALL
+	HDEL
+	HLEN
+	HEXISTS
+	HINCRBY
+	HKEYS
+	HVALS
+ */
 echo "<pre>";
 
 // $user_arr = array('name'=>'aa', 'age'=>20, 'pwd'=>'ccc');

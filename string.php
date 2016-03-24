@@ -1,5 +1,27 @@
 <?php 
 include("lib/common.php");
+
+/*
+ * 字符串(String)
+	SET
+	SETNX
+	SETEX
+	SETRANGE
+	MSET
+	MSETNX
+	APPEND
+	GET
+	MGET
+	GETRANGE
+	GETSET
+	STRLEN
+	INCR
+	INCRBY
+	DECR
+	DECRBY
+	SETBIT
+	GETBIT
+ */
 echo "<pre>";
 $rand_val = rand(1, 100);
 //$old_val = $redis->getSet("name","cc".$rand_val);echo $old_val;
