@@ -51,3 +51,10 @@ function get_key_type($key){
 			return "hash";
 	}
 }
+
+function get_all_list_key_vals($list_key){
+	global $redis;
+	
+	$list_length = $redis->lLen($list_key);
+	return $redis->lGetRange($list_key, 0, $list_length-1);
+}
