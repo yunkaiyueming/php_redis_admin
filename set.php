@@ -46,15 +46,15 @@ echo "<pre>";
 // $redis->sAdd("set_user", "cc", "dd");
 // $redis->sPop("set_user");
 
-var_dump($redis->sUnion("set_user", 'set_movie'));
+// var_dump($redis->sUnion("set_user", 'set_movie'));
 
-$redis->sUnionStore("union_user_movie", "set_user", "set_movie");
-$union_user_movie = $redis->sMembers("user_inter_movie");
-print_r($union_user_movie);
+// $redis->sUnionStore("union_user_movie", "set_user", "set_movie");
+// $union_user_movie_members = $redis->sMembers("union_user_movie");
+// print_r($union_user_movie_members);
 
-$redis->sRandMember();
+echo $redis->sRandMember('union_user_movie');
 
-$redis->sMove();
+$redis->srem("union_user_movie", "wom");
+$union_user_movie_members = $redis->sMembers("union_user_movie");
+print_r($union_user_movie_members);
 
-$set_user_members = $redis->sMembers("set_user");
-print_r($set_user_members);
