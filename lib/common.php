@@ -58,3 +58,17 @@ function get_all_list_key_vals($list_key){
 	$list_length = $redis->lLen($list_key);
 	return $redis->lGetRange($list_key, 0, $list_length-1);
 }
+
+//从小到大取数据
+function get_all_zset_key_vals($key){
+	global $redis;
+	$all_key_vals = $redis->zRange($key, 0, -1, 'WITHSCORES');
+	print_r($all_key_vals);
+}
+
+//从大到小取数据
+function get_all_zset_key_vals_desc($key){
+	global $redis;
+	$all_key_vals = $redis->zReverseRange($key, 0, -1, 'WITHSCORES');
+	print_r($all_key_vals);
+}

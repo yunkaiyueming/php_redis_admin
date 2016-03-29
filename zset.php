@@ -23,18 +23,6 @@ echo "<pre>";
     ZLEXCOUNT
     ZREMRANGEBYLEX
  */
-function get_all_zset_key_vals($key){
-	global $redis;
-	$all_key_vals = $redis->zRange($key, 0, -1, 'WITHSCORES');
-	print_r($all_key_vals);
-}
-
-//从大到小取数据
-function get_all_zset_key_vals_desc($key){
-	global $redis;
-	$all_key_vals = $redis->zReverseRange($key, 0, -1, 'WITHSCORES');
-	print_r($all_key_vals);
-}
 
 // $redis->zAdd("zset_website", "10", "baidu", "9", "google");
 // $redis->zAdd("zset_website", "10", "360", "9", "gougou");
