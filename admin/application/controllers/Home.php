@@ -33,27 +33,23 @@ class Home extends CI_Controller {
 		}
 	}
 	
-	public function get_key_by_type($key_type){
+	public function get_key_by_type($filter_key_type){
 		$redis = get_redis_obj();
 		$all_keys = $redis->keys("*");
 		
 		$keys = array();
 		foreach($all_keys as $key){
-			if(!empty($key_type)){
-				if($this->get_key_type($key)==$key_type){
-					$keys[] = array(
-						'key' => $key,
-						'key_type' => $key_type,
-					);
-				}
-			}else{
-				$keys[] = array(
-					'key' => $key,
-					'key_type' => $this->get_key_type($key),
-					'encoding' => $this->get_key_encoding($key),
-				);
+			$key_type = $this->get_key_type($key);
+			
+			if(!empty($filter_key_type) && ($key_type!=$filter_key_type)){
+				continue;
 			}
 			
+			$keys[] = array(
+				'key' => $key,
+				'key_type' => $key_type,
+				'encoding' => $this->get_key_encoding($key),
+			);
 		}
 		return $keys;
 	}
