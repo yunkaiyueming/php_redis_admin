@@ -35,7 +35,13 @@ class Data extends CI_Controller {
 	}
 	
 	public function log_zset(){
-		
+		$redis = get_redis_obj();
+		for($day=0; $day<10; $day++){
+			for($i=1; $i<200; $i++){
+				$score = rand(1, 100);
+				echo $redis->zAdd("website_$day", $score, $i."_baidu.com");
+			}
+		}
 	}
 	
 	public function log_hash(){
