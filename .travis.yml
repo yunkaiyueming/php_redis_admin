@@ -1,1 +1,12 @@
 language: php
+
+php:
+  - "5.6"
+  
+notifications:
+  email: false
+  
+#指定分支，只有指定的分支提交时才会运行脚本
+branches:
+  only:
+    - master
