@@ -63,10 +63,18 @@ get_all_zset_key_vals('zset_website');
 
 //print_r($redis->zRevRangeByScore("zset_website", 10, 7));
 
+
+//$redis -> zrangebyscore ( 'zset1' , 2 , 9 ) ;  //返回索引值2-9之间的元素 array('ef','gh')
+//参数形式
+//$redis -> zrangebyscore ( 'zset1' , 2 , 9 , 'withscores' ) ;  //返回索引值2-9之间的元素并包含索引值 array(array('ef',3),array('gh',5))
+//$redis -> zrangebyscore ( 'zset1' , 2 , 9 , array ( 'withscores'  => true , 'limit' => array ( 1 ,  2 ) ) ) ;  //返回索引值2-9之间的元素,'withscores' =>true表示包含索引值; 'limit'=>array(1, 2),表示最多返回2条,结果为array(array('ef',3),array('gh',5))
+
+
+
 //echo $redis->zRevRank("zset_website", "360");
 //ZUNIONSTORE salary 2 programmer manager WEIGHTS 1 3   # 公司决定加薪。。。除了程序员。。。
 
-$redis->zAdd("zset_like", "100", "orange", "90", "apple");
+//$redis->zAdd("zset_like", "100", "orange", "90", "apple");
 
 //??????
 // $redis->zunionstore("sum_like_website", "zset_like", "zset_website"); 
