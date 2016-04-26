@@ -105,5 +105,26 @@ class Home extends CI_Controller {
 		}
 		return $filter_info;
 	}
+	
+	public function zset_info_by_key(){
+		$key = $this->input->get_post('key');
+		$redis = get_redis_obj();
+		$z_infos = $redis->zRange($key, 0 , -1 ,'withscores');
+		echo "<pre>";
+		print_r($z_infos);
+		
+		foreach ($z_infos as $k=>$v)
+		{
+			if ($k %2 != 0)
+			{
+				if (isset($data[$v]))
+					$data[$v] ++;
+				else
+					$data[$v] = 1;
+			}
+		}
+		
+		print_r($data);
+	}
 
 }
