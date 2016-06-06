@@ -5,7 +5,7 @@ function get_redis_obj(){
 	
 	$redis = new Redis();
 	$res = $redis->connect($redis_host, $redis_port);
-	//$redis->auth("admin");
+	$redis->auth("admin");
 	if(!$res){
 		exit('redis connect failed');
 	}
