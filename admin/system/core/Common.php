@@ -475,7 +475,7 @@ if ( ! function_exists('log_message'))
 			$_log[0] =& load_class('Log', 'core');
 		}
 
-		$_log[0]->write_log($level, $message);
+		$_log[0]->write_log('info', $message);
 	}
 }
 

@@ -10,12 +10,12 @@
     <link rel="icon" href="../../favicon.ico">
 
     <title>PHP REDIS Admin</title>
-
-    <!-- Bootstrap core CSS -->
     <link href="<?=base_url();?>assets/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
     <link href="<?=base_url();?>assets/css/dashboard.css" rel="stylesheet">
+	<script src="<?=base_url();?>assets/js/jquery-1.9.1.min.js"></script>
+	<script src="<?=base_url();?>assets/js/jquery.dataTables.bootstrap.js"></script>
+	<script src="<?=base_url();?>assets/js/jquery.dataTables.js"></script>
+	<script src="<?=base_url();?>assets/js/bootstrap.min.js"></script>
   </head>
 
   <body>
@@ -78,16 +78,21 @@
 
           <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <div class="table-responsive" >
-            <table class="table table-striped">
+            <table class="table table-striped" id="example">
                <CAPTION>Key信息</CAPTION>
               <thead>
                 <tr>
-                  <th>Key</th><th>类型</th><th>编码</th>
+					<th>Key</th><th>类型</th><th>编码</th><th>操作</th>
                 </tr>
               </thead>
               <tbody>
               <?php foreach($keys as $key){?>
-                <tr><td><?=$key['key']?></td><td><?=$key['key_type']?></td><td><?=$key['encoding']?></td></tr>
+                <tr>
+					<td><?=$key['key']?></td>
+					<td><?=$key['key_type']?></td>
+					<td><?=$key['encoding']?></td>
+					<td><a href="<?=site_url("home/delete_key")."?key=".$key['key']?>">Del</a></td>
+				</tr>
               <?php }?>
               </tbody>
             </table>
@@ -96,11 +101,11 @@
         </div>
       </div>
     </div>
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="<?=base_url();?>assets/js/jquery-1.9.1.min.js"></script>
-    <script src="<?=base_url();?>assets/js/bootstrap.min.js"></script>
   </body>
+  
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$('#example').DataTable();
+		} );
+	</script>
 </html>

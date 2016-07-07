@@ -7,6 +7,7 @@ class Home extends MY_Controller {
 		
 		$this->load->helper('url');
 		$this->load->helper("my_redis");
+		$this->redis = get_redis_obj();
 	}
 
 	public function index(){
@@ -33,9 +34,8 @@ class Home extends MY_Controller {
 		}
 	}
 	
-	public function get_key_by_type($filter_key_type){
-		$redis = get_redis_obj();
-		$all_keys = $redis->keys("*");
+	public function get_key_by_type($filter_key_type, $start_offset=0, $limit=500){
+		$all_keys = $this->redis->keys("*");
 		
 		$keys = array();
 		foreach($all_keys as $key){
@@ -51,7 +51,8 @@ class Home extends MY_Controller {
 				'encoding' => $this->get_key_encoding($key),
 			);
 		}
-		return $keys;
+		
+		return array_slice($keys, $start_offset, $limit);
 	}
 	
 	public function get_key_type($key){
@@ -61,9 +62,7 @@ class Home extends MY_Controller {
 		// 	set(集合) int(2)
 		// 	zset(有序集) int(4)
 		// 	hash(哈希表) int(5)
-	
-		$redis = get_redis_obj();
-		$type_value = $redis->type($key);
+		$type_value = $this->redis->type($key);
 		switch($type_value){
 			case 0:
 				return "none";
@@ -91,13 +90,11 @@ class Home extends MY_Controller {
 	}
 	
 	public function get_key_encoding($key){
-		$redis = get_redis_obj();
-		return $redis->object('ENCODING', $key);
+		return $this->redis->object('ENCODING', $key);
 	}
 	
 	public function get_server_info($filter_keys){
-		$redis = get_redis_obj();
-		$server_info = $redis->info();
+		$server_info = $this->redis->info();
 		foreach($filter_keys as $key){
 			if(array_key_exists($key, $server_info)){
 				$filter_info[$key] = $server_info[$key];
@@ -108,8 +105,7 @@ class Home extends MY_Controller {
 	
 	public function zset_info_by_key(){
 		$key = $this->input->get_post('key');
-		$redis = get_redis_obj();
-		$z_infos = $redis->zRange($key, 0 , -1 ,'withscores');
+		$z_infos = $this->redis->zRange($key, 0 , -1 ,'withscores');
 		echo "<pre>";
 		print_r($z_infos);
 		
@@ -126,5 +122,14 @@ class Home extends MY_Controller {
 		
 		print_r($data);
 	}
-
+	
+	public function delete_key(){
+		$key_name = $this->input->get_post('key');
+		try{
+			$this->redis->del($key_name);
+			redirect($_SERVER['HTTP_REFERER']);
+		}catch (Exception $e) {
+			log_message('info', 'Redis handle' . $e->getMessage());
+		}
+	}
 }
