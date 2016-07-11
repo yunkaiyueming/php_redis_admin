@@ -20,7 +20,7 @@ class Home extends MY_Controller {
 		$view_data['keys'] = $keys;
 		$view_data['key_type'] = $key_type;
 		$view_data['server_info'] = $server_info;
-		return $this->render("index.php", $view_data);
+		return $this->render("home/index.php", $view_data);
 	}
 	
 
@@ -102,26 +102,6 @@ class Home extends MY_Controller {
 		return $filter_info;
 	}
 	
-	public function zset_info_by_key(){
-		$key = $this->input->get_post('key');
-		$z_infos = $this->redis->zRange($key, 0 , -1 ,'withscores');
-		echo "<pre>";
-		print_r($z_infos);
-		
-		foreach ($z_infos as $k=>$v)
-		{
-			if ($k %2 != 0)
-			{
-				if (isset($data[$v]))
-					$data[$v] ++;
-				else
-					$data[$v] = 1;
-			}
-		}
-		
-		print_r($data);
-	}
-	
 	public function delete_key(){
 		$key_name = $this->input->get_post('key');
 		try{
@@ -130,5 +110,56 @@ class Home extends MY_Controller {
 		}catch (Exception $e) {
 			log_message('info', 'Redis handle' . $e->getMessage());
 		}
+	}
+	
+	public function edit_key(){
+		
+	}
+	
+	public function view_key(){
+		$key_name = $this->input->get_post('key');
+		try{
+			$key_encoding = $this->get_key_encoding($key_name);
+			$view_data = array(
+				'key_name' => $key_name,
+				'val' => $this->get_key_vals($key_name),
+				'key_type' => get_key_type($key_name),
+				'key_encoding' => $key_encoding,
+			);
+			return $this->render("home/view", $view_data);
+		}catch (Exception $e) {
+			log_message('info', 'Redis handle' . $e->getMessage());
+			$view_data['error'] = "get redis key wrong";
+			return $this->render("home/msg", $view_data);
+		}
+	}
+	
+	public function get_key_vals($key_name){
+		$key_type = get_key_type($key_name);
+		switch($key_type){
+			case 'string':
+				$val = $this->redis->get($key_name);break;
+			case 'list':
+				$llen = $this->redis->llen($key_name);
+				$val = $this->redis->lrange($key_name,0, $llen);break;
+			case 'set':
+				$val = $this->redis->SMEMBERS($key_name);break;
+			case 'zset':
+				$val = $this->redis->ZRANGE($key_name, 0, -1, 'WITHSCORES');
+				foreach($val as $key=>&$value){
+					$value = $key."($value)";
+				}
+				break;
+			case 'hash':
+				$val = $this->redis->HGETAll($key_name);
+				foreach($val as $key=>&$value){
+					$value = $key.":".$value;
+				}
+				break;
+			default:
+				break;
+		}
+
+		return is_array($val) ? implode("<br>", $val) : $val;
 	}
 }
