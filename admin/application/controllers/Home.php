@@ -1,5 +1,4 @@
-<?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Home extends MY_Controller {
 	public function __construct(){
@@ -21,7 +20,7 @@ class Home extends MY_Controller {
 		$view_data['keys'] = $keys;
 		$view_data['key_type'] = $key_type;
 		$view_data['server_info'] = $server_info;
-		return $this->load->view('index.php', $view_data);
+		return $this->render("index.php", $view_data);
 	}
 	
 
