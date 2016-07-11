@@ -6,7 +6,7 @@
 	   <CAPTION>Key信息</CAPTION>
 	  <thead>
 		<tr>
-			<th>Key</th><th>值</th><th>类型</th><th>编码</th>
+			<th>Key</th><th>值</th><th>类型</th><th>过期时间(s)</th><th>编码</th>
 		</tr>
 	  </thead>
 	  <tbody>
@@ -14,6 +14,7 @@
 			<td><?=$key_name?></td>
 			<td><?=$val?></td>
 			<td><?=$key_type?></td>
+			<td><?=$ttl?></td>
 			<td><?=$key_encoding?></td>
 		</tr>
 	  </tbody>

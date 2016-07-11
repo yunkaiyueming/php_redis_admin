@@ -15,12 +15,12 @@
 </div>
 
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-  <div class="table-responsive" >
+  <div class="table-responsive">
 	<table class="table table-striped" id="example">
 	   <CAPTION>Key信息</CAPTION>
 	  <thead>
 		<tr>
-			<th>Key</th><th>类型</th><th>编码</th><th>操作</th>
+			<th>Key</th><th>类型</th><th>编码</th><th>过期时间(s)</th><th>引用次数</th><th>操作</th>
 		</tr>
 	  </thead>
 	  <tbody>
@@ -29,6 +29,8 @@
 			<td><?=$key['key']?></td>
 			<td><?=$key['key_type']?></td>
 			<td><?=$key['encoding']?></td>
+			<td><?=$key['ttl']?></td>
+			<td><?=$key['refcount']?></td>
 			<td>
 				<a href="<?=site_url("home/view_key")."?key=".$key['key']?>">View</a>
 				<a href="<?=site_url("home/Edit_key")."?key=".$key['key']?>">Edit</a>

@@ -39,7 +39,6 @@ class Home extends MY_Controller {
 		$keys = array();
 		foreach($all_keys as $key){
 			$key_type = $this->get_key_type($key);
-			
 			if(!empty($filter_key_type) && ($key_type!=$filter_key_type)){
 				continue;
 			}
@@ -47,7 +46,9 @@ class Home extends MY_Controller {
 			$keys[] = array(
 				'key' => $key,
 				'key_type' => $key_type,
+				'ttl' => $this->get_key_ttl($key),
 				'encoding' => $this->get_key_encoding($key),
+				'refcount' => $this->get_key_refcount($key),
 			);
 		}
 		
@@ -89,17 +90,63 @@ class Home extends MY_Controller {
 	}
 	
 	public function get_key_encoding($key){
-		return $this->redis->object('ENCODING', $key);
+		return $this->get_key_object($key, 'ENCODING');
+	}
+	
+	public function get_key_refcount($key){
+		return $this->get_key_object($key, 'REFCOUNT');
+	}
+	
+	private function get_key_object($key, $object_name){
+		return $this->redis->object($object_name, $key);
 	}
 	
 	public function get_server_info($filter_keys){
 		$server_info = $this->redis->info();
 		foreach($filter_keys as $key){
 			if(array_key_exists($key, $server_info)){
-				$filter_info[$key] = $server_info[$key];
+				$filter_info[$key] = $key=='used_memory'? $this->file_size_convert($server_info[$key]):$server_info[$key];
 			}
 		}
 		return $filter_info;
+	}
+	
+	public function file_size_convert($bytes){
+		$bytes = floatval($bytes);
+		$arBytes = array(
+			0 => array(
+				"UNIT" => "TB",
+				"VALUE" => pow(1024, 4)
+			),
+			1 => array(
+				"UNIT" => "GB",
+				"VALUE" => pow(1024, 3)
+			),
+			2 => array(
+				"UNIT" => "MB",
+				"VALUE" => pow(1024, 2)
+			),
+			3 => array(
+				"UNIT" => "KB",
+				"VALUE" => 1024
+			),
+			4 => array(
+				"UNIT" => "B",
+				"VALUE" => 1
+			),
+		);
+		
+		if($bytes == 0){
+			return "0 B";
+		}
+		foreach($arBytes as $arItem){
+			if($bytes >= $arItem["VALUE"]){
+				$result = $bytes / $arItem["VALUE"];
+				$result = strval(round($result, 2))." ".$arItem["UNIT"];
+				break;
+			}
+		}
+		return $result;
 	}
 	
 	public function delete_key(){
@@ -124,6 +171,7 @@ class Home extends MY_Controller {
 				'key_name' => $key_name,
 				'val' => $this->get_key_vals($key_name),
 				'key_type' => get_key_type($key_name),
+				'ttl' => $this->get_key_ttl($key_name),
 				'key_encoding' => $key_encoding,
 			);
 			return $this->render("home/view", $view_data);
@@ -161,5 +209,9 @@ class Home extends MY_Controller {
 		}
 
 		return is_array($val) ? implode("<br>", $val) : $val;
+	}
+	
+	public function get_key_ttl($key_name){
+		return $this->redis->ttl($key_name);
 	}
 }
