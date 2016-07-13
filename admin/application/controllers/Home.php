@@ -7,12 +7,13 @@ class Home extends MY_Controller {
 		$this->load->helper('url');
 		$this->load->helper("my_redis");
 		$this->redis = get_redis_obj();
+		$this->select_db();
 	}
 
 	public function index(){
 		$key_type = $this->input->get_post('type');
 		$key_type = $this->filter_key_type($key_type);
-		$keys = $this->get_key_by_type($key_type);
+		$keys = $this->get_key_by_type($key_type, 0, 100);
 		
 		$server_keys = array('redis_version', 'arch_bits', 'os', 'tcp_port', 'config_file','connected_clients','used_memory');
 		$server_info = $this->get_server_info($server_keys);
@@ -20,6 +21,7 @@ class Home extends MY_Controller {
 		$view_data['keys'] = $keys;
 		$view_data['key_type'] = $key_type;
 		$view_data['server_info'] = $server_info;
+		$view_data['database_num'] = $this->get_config_info('databases');
 		return $this->render("home/index.php", $view_data);
 	}
 	
@@ -49,10 +51,13 @@ class Home extends MY_Controller {
 				'ttl' => $this->get_key_ttl($key),
 				'encoding' => $this->get_key_encoding($key),
 				'refcount' => $this->get_key_refcount($key),
+				'size' => $this->file_size_convert($this->get_key_size($key)),
 			);
+			
+			if(count($keys)>=$limit) break;
 		}
 		
-		return array_slice($keys, $start_offset, $limit);
+		return $keys;
 	}
 	
 	public function get_key_type($key){
@@ -160,19 +165,41 @@ class Home extends MY_Controller {
 	}
 	
 	public function edit_key(){
-		
-	}
-	
-	public function view_key(){
 		$key_name = $this->input->get_post('key');
-		try{
-			$key_encoding = $this->get_key_encoding($key_name);
+		$vals = $this->input->get_post('vals');
+		$field = $this->input->get_post('field');
+		$field_val = $this->input->get_post('field_val');
+		$action = $this->input->get_post('submit');
+		if(!empty($key_name) && empty($action)){
 			$view_data = array(
 				'key_name' => $key_name,
 				'val' => $this->get_key_vals($key_name),
 				'key_type' => get_key_type($key_name),
 				'ttl' => $this->get_key_ttl($key_name),
-				'key_encoding' => $key_encoding,
+				'key_encoding' => $this->get_key_encoding($key_name),
+			);
+			return $this->render("home/edit", $view_data);
+		}
+		
+		try{
+			$param = array('vals'=>$vals, $field=>$field_val);
+			$this->update_key_by_type($key_name, $param);
+			redirect("home/view_key?key=$key_name");
+		}catch (Exception $e) {
+			log_message('info', 'Redis handle' . $e->getMessage());
+			return $this->render("home/msg", $view_data);
+		}
+	}
+	
+	public function view_key(){
+		$key_name = $this->input->get_post('key');
+		try{
+			$view_data = array(
+				'key_name' => $key_name,
+				'val' => $this->get_key_vals($key_name),
+				'key_type' => get_key_type($key_name),
+				'ttl' => $this->get_key_ttl($key_name),
+				'key_encoding' => $this->get_key_encoding($key_name),
 			);
 			return $this->render("home/view", $view_data);
 		}catch (Exception $e) {
@@ -211,7 +238,72 @@ class Home extends MY_Controller {
 		return is_array($val) ? implode("<br>", $val) : $val;
 	}
 	
+	public function update_key_by_type($key_name, $param){
+		$key_type = get_key_type($key_name);
+		try {
+			switch($key_type){
+				case 'string':
+					$this->redis->set($key_name, $param['vals']);
+				case 'list':
+					$this->redis->lset($key_name, $param['field'], $param['field_val']);
+				case 'set':
+					$this->redis->srem($key_name, $param['field_val']);
+					$this->redis->sadd($key_name, $param['field_val']);
+				case 'zset':
+					$this->redis->zrem($key_name, $param['field_val']);
+					$this->redis->zadd($key_name, $param['field_val']);
+				case 'hash':
+					$this->redis->hset($key_name, $param['field'], $param['field_val']);
+			}
+		} catch (Exception $e) {
+			log_message('info', 'Redis handle' . $e->getMessage());
+			return $this->render("home/msg");
+		}
+	}
+	
 	public function get_key_ttl($key_name){
 		return $this->redis->ttl($key_name);
+	}
+	
+	public function get_formate_key_size(){
+		$patterns = array(
+			'foo:.+',
+			'bar:.+',
+		);
+
+		$this->redis->setOption(Redis::OPT_SCAN, Redis::SCAN_RETRY);
+		$result = array_fill_keys($patterns, 0);
+		while($keys = $this->redis->scan($it, $match = '*', $count = 1000)) {
+			foreach($keys as $key) {
+				foreach($patterns as $pattern) {
+					if(preg_match("/^{$pattern}$/", $key)) {
+						if ($v = $this->redis->debug($key)) {
+							$result[$pattern] += $v['serializedlength'];
+						}
+
+						break;
+					}
+				}
+			}
+		}
+
+		return $result;
+	}
+	
+	public function get_key_size($key_name){
+		$v = $this->redis->debug($key_name);
+		return $v['serializedlength'];//key_size = strlen(key) + serializedlength + 7
+	}
+	
+	public function get_config_info($field){
+		$info = $this->redis->config("get", "*");
+		return $info[$field];
+	}
+	
+	private function select_db(){
+		$db_num = $this->input->get_post('db');
+		$db_num = empty($db_num) ? 0:$db_num;
+		$db_num = intval($db_num);
+		$this->redis->select($db_num);
 	}
 }
