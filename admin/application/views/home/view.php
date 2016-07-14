@@ -17,6 +17,7 @@
 			<td><?=$ttl?></td>
 			<td><?=$key_encoding?></td>
 		</tr>
+		<tr><td><a href="<?=site_url("home/add_key?key=$key_name")?>">add value</a></td></tr>
 	  </tbody>
 	</table>
   </div>

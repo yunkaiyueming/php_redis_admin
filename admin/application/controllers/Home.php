@@ -192,6 +192,55 @@ class Home extends MY_Controller {
 		}
 	}
 	
+	public function add_key(){
+		$action = $this->input->get_post('action');
+		$key_name = $this->input->get_post('key');
+		$key_type = get_key_type($key_name);
+		if(empty($action)){
+			$view_data = array(
+				'key_name' => $key_name,
+				'val' => $this->get_key_vals($key_name),
+				'key_type' => $key_type,
+				'ttl' => $this->get_key_ttl($key_name),
+				'key_encoding' => $this->get_key_encoding($key_name),
+			);
+			return $this->render("home/add", $view_data);
+		}
+		
+		$field = $this->input->get_post("field");
+		$field_val = $this->input->get_post("field_val");
+		try{
+			$param = array('value'=>$field_val, 'field'=>$field);
+			$this->_add_key_val_by_type($key_name, $param);
+			redirect($_SERVER['HTTPREFERER']);
+		}catch (Exception $e) {
+			log_message('info', 'Redis handle' . $e->getMessage());
+			$view_data['error'] = "get redis key wrong";
+			return $this->render("home/msg", $view_data);
+		}
+	}
+	
+	private function _add_key_val_by_type($key_name, $param){
+		$key_type = get_key_type($key_name);
+		switch($key_type) {
+			case 'list':
+				$this->redis->lPush($key_name, $param['value']);
+				break;
+			
+			case 'set':
+				$this->redis->sadd($key_name, $param['value']);
+				break;
+			
+			case 'zset':
+				$this->redis->zadd($key_name, $param['value']);
+				break;
+			
+			case 'hash':
+				$this->redis->hset($key_name, $param['field'], $param['value']);
+				break;
+		}
+	}
+	
 	public function view_key(){
 		$key_name = $this->input->get_post('key');
 		try{

@@ -35,8 +35,9 @@
 			<td><?=$key['size']?></td>
 			<td>
 				<a href="<?=site_url("home/view_key")."?key=".$key['key']?>">View</a>
-				<a href="<?=site_url("home/Edit_key")."?key=".$key['key']?>">Edit</a>
-				<a href="<?=site_url("home/Del_key")."?key=".$key['key']?>">Del</a>
+				<a href="<?=site_url("home/add_key")."?key=".$key['key']?>">Add</a>
+				<a href="<?=site_url("home/edit_key")."?key=".$key['key']?>">Edit</a>
+				<a href="<?=site_url("home/del_key")."?key=".$key['key']?>">Del</a>
 			</td>
 		</tr>
 	  <?php }?>
