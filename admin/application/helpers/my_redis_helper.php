@@ -3,7 +3,7 @@
 		$redis_host = "127.0.0.1";
 		$redis_port = 6379;
 
-		$redis = new Redis();
+		$redis = new Redis();//使用phpredis(比predis性能好)
 		$res = $redis->connect($redis_host, $redis_port);
 		$redis->auth("admin");
 		if(!$res){
