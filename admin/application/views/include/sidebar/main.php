@@ -15,7 +15,7 @@ $sidebar_data = array(
 	<div class="col-sm-3 col-md-2 sidebar">
 	
 	<div class="dropdown">
-		<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">选择库：</button>
+		<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">选择库：<?="db".$this->input->get_post("db")?></button>
 		<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
 			<?php for($i=0;$i<$database_num;$i++){?>
 			<li <?php if($i==$this->input->get_post('db')){echo "class='selected'";}?>><a href="<?=site_url("home/index")."?db=$i"?>"><?="db".$i?></a></li>

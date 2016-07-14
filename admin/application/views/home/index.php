@@ -8,6 +8,7 @@
 				<?php foreach($server_info as $key=>$info){?>
 					<tr><th><?=$key?></th><th><?=$info?></th></tr>
 				<?php }?>
+					<tr><th>dbsize</th><th><?=$dbsize?></th></tr>
 			</tbody>
 		</table>
 		</div>

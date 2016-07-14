@@ -22,6 +22,7 @@ class Home extends MY_Controller {
 		$view_data['key_type'] = $key_type;
 		$view_data['server_info'] = $server_info;
 		$view_data['database_num'] = $this->get_config_info('databases');
+		$view_data['dbsize'] = $this->redis->dbSize();
 		return $this->render("home/index.php", $view_data);
 	}
 	
