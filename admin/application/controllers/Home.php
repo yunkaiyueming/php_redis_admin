@@ -381,6 +381,7 @@ class Home extends MY_Controller {
 		}elseif($action=='flush_all'){
 			$this->redis->flushAll();
 		}else{
+			$view_data['database_num'] = $this->get_config_info('databases');
 			$view_data['server_info'] = $server_info;
 			return $this->render("home/server", $view_data);
 		}
@@ -389,6 +390,7 @@ class Home extends MY_Controller {
 	
 	public function slow(){
 		$slow_logs = $this->redis->slowlog('get');
+		$view_data['database_num'] = $this->get_config_info('databases');
 		$view_data['slow_infos'] = $slow_logs;
 		return $this->render("home/slow", $view_data);
 	}
