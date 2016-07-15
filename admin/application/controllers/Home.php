@@ -107,14 +107,17 @@ class Home extends MY_Controller {
 		return $this->redis->object($object_name, $key);
 	}
 	
-	public function get_server_info($filter_keys){
+	public function get_server_info($filter_keys=''){
 		$server_info = $this->redis->info();
-		foreach($filter_keys as $key){
-			if(array_key_exists($key, $server_info)){
-				$filter_info[$key] = $key=='used_memory'? $this->file_size_convert($server_info[$key]):$server_info[$key];
+		if(!empty($filter_keys)){
+			foreach($filter_keys as $key){
+				if(array_key_exists($key, $server_info)){
+					$filter_info[$key] = $key=='used_memory'? $this->file_size_convert($server_info[$key]):$server_info[$key];
+				}
 			}
+			return $filter_info;
 		}
-		return $filter_info;
+		return $server_info;
 	}
 	
 	public function file_size_convert($bytes){
@@ -355,5 +358,38 @@ class Home extends MY_Controller {
 		$db_num = empty($db_num) ? 0:$db_num;
 		$db_num = intval($db_num);
 		$this->redis->select($db_num);
+	}
+	
+	public function server_manage(){
+		$server_keys = array('redis_version', 'arch_bits', 'os', 'tcp_port', 'config_file','connected_clients','used_memory', 'rdb_last_save_time');
+		$server_info = $this->get_server_info($server_keys);
+		
+		$action = $this->input->get_post('action');
+		//$last_save = $this->redis->lastSave();
+		if($action=='aof'){
+			$this->redis->bgrewriteaof();
+		}elseif($action=='bgsave'){
+			$this->redis->bgsave();
+		}elseif($action=='slave_of'){
+			//SLAVEOF host port 
+			$this->redis->slaveof("");
+		}elseif($action=='slave_master'){
+			//SLAVEOF NO ONE
+			$this->redis->slaveof("");
+		}elseif($action=='flush_db'){
+			$this->redis->flushDB();
+		}elseif($action=='flush_all'){
+			$this->redis->flushAll();
+		}else{
+			$view_data['server_info'] = $server_info;
+			return $this->render("home/server", $view_data);
+		}
+		redirect($_SERVER['HTTP_REFERER']);
+	}
+	
+	public function slow(){
+		$slow_logs = $this->redis->slowlog('get');
+		$view_data['slow_infos'] = $slow_logs;
+		return $this->render("home/slow", $view_data);
 	}
 }

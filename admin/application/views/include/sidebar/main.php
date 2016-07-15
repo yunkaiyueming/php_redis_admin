@@ -2,11 +2,13 @@
 $db = $this->input->get_post('db');
 $db = empty($db)?0:$db;
 $sidebar_data = array(
-	array('url' =>'home/index?type=string&db='.$db, 'desc'=>'String'),
-	array('url' =>'home/index?type=list&db='.$db, 'desc'=>'List'),
-	array('url' =>'home/index?type=set&db='.$db, 'desc'=>'Set'),
-	array('url' =>'home/index?type=zset&db='.$db, 'desc'=>'Zset'),
-	array('url' =>'home/index?type=hash&db='.$db, 'desc'=>'Hash'),
+	array('url' =>'home/index?type=string&db='.$db, 'desc'=>'String类型'),
+	array('url' =>'home/index?type=list&db='.$db, 'desc'=>'List类型'),
+	array('url' =>'home/index?type=set&db='.$db, 'desc'=>'Set类型'),
+	array('url' =>'home/index?type=zset&db='.$db, 'desc'=>'Zset类型'),
+	array('url' =>'home/index?type=hash&db='.$db, 'desc'=>'Hash类型'),
+	array('url' =>'home/server_manage?db='.$db, 'desc'=>'服务器管理'),
+	array('url' =>'home/slow?db='.$db, 'desc'=>'慢查询'),
 );
 ?>
 
