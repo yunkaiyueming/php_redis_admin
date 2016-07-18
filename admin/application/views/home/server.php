@@ -6,7 +6,7 @@
 		<table class="table table-striped">
 			<tbody>
 				<?php foreach($server_info as $key=>$info){?>
-					<tr><th><?=$key?></th><th><?=$info?></th></tr>
+					<tr><th><?=$key?></th><th><?php if($key=='rdb_last_save_time'){echo date("Y-m-d H:i:s", $info);}else{echo $info;}?></th></tr>
 				<?php }?>
 					<tr><th>重写AOF</th><th><a href="<?=site_url("home/server_manage")."?action=aof"?>">重写AOF</a></th></tr>
 					<tr><th>后台保存</th><th><a href="<?=site_url("home/server_manage")."?action=bgsave"?>">后台保存</a></th></tr>

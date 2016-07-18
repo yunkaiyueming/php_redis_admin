@@ -389,9 +389,27 @@ class Home extends MY_Controller {
 	}
 	
 	public function slow(){
+		$action = $this->input->get_post('action');
+		$slowlog_time = $this->redis->config('get', "slowlog-log-slower-than");
+		$slowlog_max_num = $this->redis->config('get', 'slowlog-max-len');
 		$slow_logs = $this->redis->slowlog('get');
+		$slow_logs_nums = $this->redis->slowlog('len');
+		
+		if($action=='reset'){
+			$this->redis->slowlog('reset');
+			redirect($_SERVER['HTTP_REFERER']);
+		}
+		
 		$view_data['database_num'] = $this->get_config_info('databases');
+		$view_data['slowlog_time'] = $slowlog_time['slowlog-log-slower-than'];
+		$view_data['slowlog_max_num'] = $slowlog_max_num['slowlog-max-len'];
+		$view_data['slow_logs_nums'] = $slow_logs_nums;
 		$view_data['slow_infos'] = $slow_logs;
 		return $this->render("home/slow", $view_data);
+	}
+	
+	public function get_redis_option(){
+		$ret = $this->redis->getOption(Redis::OPT_SCAN);
+		print_r($ret);
 	}
 }
