@@ -10,9 +10,13 @@
 				<?php }?>
 					<tr><th>重写AOF</th><th><a href="<?=site_url("home/server_manage")."?action=aof"?>">重写AOF</a></th></tr>
 					<tr><th>后台保存</th><th><a href="<?=site_url("home/server_manage")."?action=bgsave"?>">后台保存</a></th></tr>
+					
 					<tr><th>从服务器</th><th><a href="<?=site_url("")?>">从服务器</a></th></tr>
 					<tr><th>主服务器</th><th><a href="<?=site_url("")?>">主服务器</a></th></tr>
 					<tr><th>关闭服务器</th><th><a href="<?=site_url("")?>">关闭服务器</a></th></tr>
+					
+					<tr><th>备份服务器</th><th><a href="<?=site_url("")?>">备份服务器</a></th></tr>
+					
 					<tr><th>清空当前库</th><th><a href="<?=site_url("")?>">清空当前库</a></th></tr>
 					<tr><th>清空整个库</th><th><a href="<?=site_url("")?>">清空整个库</a></th></tr>
 			</tbody>
